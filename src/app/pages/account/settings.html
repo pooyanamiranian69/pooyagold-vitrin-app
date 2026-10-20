@@ -1,0 +1,150 @@
+@let s = theme.settings();
+<div class="layout">
+  <div class="panel main">
+    <div class="head">
+      <div>
+        <h1><app-icon name="palette" /> تنظیمات ظاهری</h1>
+        <p class="muted">ظاهر فروشگاه را به سلیقه خودتان تغییر دهید؛ تغییرات بلافاصله اعمال و روی این دستگاه ذخیره می‌شوند.</p>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="reset()"><app-icon name="refresh" /> بازنشانی</button>
+    </div>
+
+    <!-- Mode -->
+    <section class="block">
+      <h2>حالت نمایش</h2>
+      <div class="modes" role="radiogroup" aria-label="حالت نمایش">
+        @for (m of modes; track m.value) {
+          <button
+            type="button"
+            role="radio"
+            class="mode"
+            [class.active]="s.mode === m.value"
+            [attr.aria-checked]="s.mode === m.value"
+            (click)="theme.update({ mode: m.value })"
+          >
+            <span class="mock" [attr.data-mock]="m.value">
+              <span class="m-bar"></span>
+              <span class="m-hero"></span>
+              <span class="m-row"><i></i><i></i><i></i></span>
+            </span>
+            <span class="m-label">
+              <app-icon [name]="m.icon" />
+              <strong>{{ m.label }}</strong>
+              @if (s.mode === m.value) {
+                <span class="tick"><app-icon name="check" /></span>
+              }
+            </span>
+            <small>{{ m.hint }}</small>
+          </button>
+        }
+      </div>
+    </section>
+
+    <!-- Accent -->
+    <section class="block">
+      <h2>رنگ اصلی سایت</h2>
+      <p class="muted sub">رنگ دکمه‌ها، لینک‌ها، نشان‌ها و جزئیات طلایی سایت از این رنگ ساخته می‌شوند.</p>
+      <div class="accents" role="radiogroup" aria-label="رنگ اصلی">
+        @for (a of accents; track a.id) {
+          <button
+            type="button"
+            role="radio"
+            class="accent"
+            [class.active]="s.accent === a.id"
+            [attr.aria-checked]="s.accent === a.id"
+            (click)="theme.update({ accent: a.id })"
+          >
+            <span class="dot" [style.--c]="a.color">
+              @if (s.accent === a.id) {
+                <app-icon name="check" [style.color]="a.onColor" />
+              }
+            </span>
+            <span>{{ a.name }}</span>
+          </button>
+        }
+      </div>
+
+      <div class="custom" [class.active]="s.accent === 'custom'">
+        <label class="picker" [style.--c]="s.custom">
+          <input type="color" [value]="s.custom" (input)="setCustom($any($event.target).value)" aria-label="انتخاب رنگ دلخواه" />
+        </label>
+        <div class="custom-text">
+          <strong>رنگ دلخواه شما</strong>
+          <small>هر رنگی را انتخاب کنید؛ تمام سایت با آن هماهنگ می‌شود.</small>
+        </div>
+        <input
+          class="input hex ltr"
+          [value]="s.custom"
+          maxlength="7"
+          (change)="setCustom($any($event.target).value)"
+          aria-label="کد رنگ"
+        />
+      </div>
+    </section>
+
+    <!-- Radius & font -->
+    <div class="two">
+      <section class="block">
+        <h2>گوشه‌های المان‌ها</h2>
+        <div class="seg">
+          @for (r of radii; track r.value) {
+            <button type="button" [class.active]="s.radius === r.value" (click)="theme.update({ radius: r.value })">
+              <span class="shape" [attr.data-r]="r.value"></span> {{ r.label }}
+            </button>
+          }
+        </div>
+      </section>
+
+      <section class="block">
+        <h2>اندازه متن</h2>
+        <div class="seg">
+          @for (f of fonts; track f.value) {
+            <button type="button" [class.active]="s.fontScale === f.value" (click)="theme.update({ fontScale: f.value })">
+              <span class="aa" [attr.data-f]="f.value">اَ</span> {{ f.label }}
+            </button>
+          }
+        </div>
+      </section>
+    </div>
+
+    <section class="block">
+      <label class="motion">
+        <span class="ic"><app-icon name="zap" /></span>
+        <span>
+          <strong>کاهش انیمیشن‌ها</strong>
+          <small>حرکت‌ها و جلوه‌های انتقالی را غیرفعال می‌کند.</small>
+        </span>
+        <input type="checkbox" class="switch" [checked]="s.reduceMotion" (change)="theme.update({ reduceMotion: !s.reduceMotion })" />
+      </label>
+    </section>
+  </div>
+
+  <!-- Live preview -->
+  <aside class="preview">
+    <span class="p-label"><app-icon name="eye" /> پیش‌نمایش زنده</span>
+    <div class="p-card">
+      <div class="p-media">
+        <img src="/images/products/ring1.jpeg" alt="" width="600" height="600" />
+        <span class="badge badge-brand">اختصاصی</span>
+      </div>
+      <div class="p-body">
+        <small class="muted">طلای زرد · برلیان</small>
+        <strong>انگشتر سولیتر الماس</strong>
+        <div class="p-specs"><span>۲٫۸۵ گرم</span><span>۱۸ عیار</span></div>
+        <div class="p-price">
+          <span class="price">۷۳٬۴۰۰٬۰۰۰ <small>تومان</small></span>
+        </div>
+        <button type="button" class="btn btn-primary btn-block btn-sm"><app-icon name="bag" /> افزودن به سبد</button>
+        <div class="p-row">
+          <button type="button" class="btn btn-soft btn-sm">ثانویه</button>
+          <button type="button" class="btn btn-outline btn-sm">حاشیه‌دار</button>
+        </div>
+        <div class="p-row chips">
+          <span class="chip active">فعال</span>
+          <span class="chip">عادی</span>
+          <input type="checkbox" class="switch" checked aria-label="نمونه" />
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>

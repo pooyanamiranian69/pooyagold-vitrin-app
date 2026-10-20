@@ -1,0 +1,72 @@
+<footer class="footer">
+  <div class="container">
+    <section class="newsletter reveal">
+      <div class="nl-text">
+        <span class="nl-icon"><app-icon name="sparkles" /></span>
+        <div>
+          <h3>اولین نفری باشید که کالکشن‌های جدید را می‌بیند</h3>
+          <p>عضو خبرنامه شوید و از تخفیف‌های ویژه و طرح‌های تازه باخبر شوید.</p>
+        </div>
+      </div>
+      <form class="nl-form" (submit)="subscribe($event)">
+        <input
+          class="input"
+          type="email"
+          placeholder="ایمیل شما"
+          [value]="email()"
+          (input)="email.set($any($event.target).value)"
+          aria-label="ایمیل"
+          dir="ltr"
+        />
+        <button type="submit" class="btn btn-primary">عضویت</button>
+      </form>
+    </section>
+
+    <div class="grid">
+      <div class="brand">
+        <app-logo />
+        <p>{{ config.description }}</p>
+        <div class="socials">
+          @for (s of config.socials; track s.icon) {
+            <a [href]="s.url" target="_blank" rel="noopener" [attr.aria-label]="s.label" [title]="s.label">
+              <app-icon [name]="s.icon" />
+            </a>
+          }
+        </div>
+      </div>
+
+      @for (col of config.footer; track col.title) {
+        <nav class="col" [attr.aria-label]="col.title">
+          <h4>{{ col.title }}</h4>
+          @for (l of col.links; track l.label) {
+            <a [routerLink]="l.link" [queryParams]="l.queryParams">{{ l.label }}</a>
+          }
+        </nav>
+      }
+
+      <div class="col contact">
+        <h4>ارتباط با ما</h4>
+        <a [href]="'tel:' + config.phone"><app-icon name="phone" /> <span class="ltr">{{ config.phone | fa }}</span></a>
+        <a [href]="'mailto:' + config.email"><app-icon name="mail" /> {{ config.email }}</a>
+        <span><app-icon name="pin" /> {{ config.address }}</span>
+        <span><app-icon name="clock" /> {{ config.workingHours }}</span>
+      </div>
+    </div>
+
+    <div class="seals">
+      @for (s of config.trustSeals; track s) {
+        <div class="seal">
+          <app-icon name="shield" />
+          <span>{{ s }}</span>
+        </div>
+      }
+    </div>
+
+    <div class="bottom">
+      <p>© {{ year }} {{ config.name }}. تمامی حقوق محفوظ است.</p>
+      <button type="button" class="to-top" (click)="toTop()" aria-label="بازگشت به بالا">
+        <app-icon name="chevron-down" />
+      </button>
+    </div>
+  </div>
+</footer>

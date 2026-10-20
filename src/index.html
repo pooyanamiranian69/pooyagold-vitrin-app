@@ -1,13 +1,49 @@
 <!doctype html>
-<html lang="en">
+<html lang="fa" dir="rtl" data-accent="gold" data-radius="soft">
   <head>
     <meta charset="utf-8" />
-    <title>PooyagoldVitrinApp</title>
+    <title>گالری طلای پویا | طلا و جواهر با اصالت</title>
     <base href="/" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="خرید آنلاین طلا و جواهرات ۱۸ عیار با قیمت لحظه‌ای، فاکتور رسمی و ضمانت اصالت." />
+    <meta name="theme-color" content="#faf7f2" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="پویا گلد" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="preload" href="fonts/vazirmatn-variable.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- اعمال تم ذخیره‌شده پیش از رندر برای جلوگیری از پرش رنگ (با ThemeService هماهنگ است) -->
+    <script>
+      (function () {
+        var r = document.documentElement;
+        try {
+          var s = JSON.parse(localStorage.getItem('pg-theme') || '{}');
+          var m = s.mode || 'system';
+          var dark = m === 'dark' || (m === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+          r.setAttribute('data-theme', dark ? 'dark' : 'light');
+          if (s.accent) r.setAttribute('data-accent', s.accent);
+          if (s.radius) r.setAttribute('data-radius', s.radius);
+          if (s.fontScale) r.setAttribute('data-font', s.fontScale);
+          if (s.reduceMotion) r.setAttribute('data-motion', 'reduce');
+          if (s.accent === 'custom' && s.custom) {
+            var h = s.custom.replace('#', '').match(/.{2}/g).map(function (x) {
+              var c = parseInt(x, 16) / 255;
+              return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+            });
+            r.style.setProperty('--accent', s.custom);
+            r.style.setProperty('--on-accent', 0.2126 * h[0] + 0.7152 * h[1] + 0.0722 * h[2] > 0.4 ? '#17130b' : '#ffffff');
+          }
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', dark ? '#0f0e0c' : '#faf7f2');
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <app-root></app-root>
+    <noscript>برای استفاده کامل از فروشگاه، جاوااسکریپت مرورگر خود را فعال کنید.</noscript>
   </body>
 </html>

@@ -1,0 +1,231 @@
+.footer {
+  margin-top: clamp(40px, 6vw, 80px);
+  background: var(--bg-soft);
+  border-top: 1px solid var(--border);
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    inset-inline: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--brand), transparent);
+  }
+}
+
+.newsletter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: -44px;
+  padding: clamp(20px, 3vw, 32px);
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(circle at 10% 0%, color-mix(in oklab, var(--brand) 35%, transparent), transparent 55%),
+    #17140f;
+  color: #f4efe7;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  h3 {
+    color: #fff;
+    font-size: clamp(1.05rem, 2vw, 1.3rem);
+  }
+  p {
+    color: #bdb3a3;
+    font-size: 0.9rem;
+  }
+}
+.nl-text {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.nl-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius);
+  background: var(--brand-gradient);
+  color: var(--on-brand);
+  app-icon {
+    width: 26px;
+    height: 26px;
+  }
+}
+.nl-form {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+  max-width: 440px;
+  min-width: min(100%, 280px);
+  .input {
+    background: rgb(255 255 255 / 0.08);
+    border-color: rgb(255 255 255 / 0.15);
+    color: #fff;
+    text-align: right;
+    &::placeholder {
+      color: #9d9488;
+    }
+  }
+  .btn {
+    height: 50px;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.6fr repeat(3, 1fr) 1.4fr;
+  gap: 2rem;
+  padding-block: 3rem 2rem;
+}
+
+.brand {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  p {
+    color: var(--muted);
+    font-size: 0.88rem;
+    line-height: 2;
+  }
+}
+
+.socials {
+  display: flex;
+  gap: 0.5rem;
+  a {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    transition: all var(--dur) var(--ease);
+    &:hover {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: var(--on-brand);
+      transform: translateY(-3px);
+    }
+  }
+}
+
+.col {
+  display: grid;
+  align-content: start;
+  gap: 0.6rem;
+  h4 {
+    font-size: 0.98rem;
+    margin-bottom: 0.4rem;
+  }
+  a,
+  span {
+    font-size: 0.88rem;
+    color: var(--muted);
+    transition: color var(--dur) var(--ease);
+  }
+  a:hover {
+    color: var(--brand-text);
+  }
+}
+
+.contact {
+  a,
+  span {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    line-height: 1.8;
+  }
+  app-icon {
+    width: 17px;
+    height: 17px;
+    margin-top: 4px;
+    color: var(--brand-text);
+  }
+}
+
+.seals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-bottom: 2rem;
+}
+.seal {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.1rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-2);
+  app-icon {
+    color: var(--brand-text);
+  }
+}
+
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1.25rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.to-top {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: all var(--dur) var(--ease);
+  app-icon {
+    transform: rotate(180deg);
+  }
+  &:hover {
+    background: var(--brand);
+    color: var(--on-brand);
+    transform: translateY(-3px);
+  }
+}
+
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 900px) {
+  .footer {
+    padding-bottom: 90px;
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  .contact {
+    grid-column: 1 / -1;
+  }
+  .nl-form {
+    max-width: none;
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "گالری طلای پویا",
+  "short_name": "پویا گلد",
+  "description": "خرید آنلاین طلا و جواهرات با قیمت لحظه‌ای",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f0d0b",
+  "theme_color": "#0f0d0b",
+  "categories": ["shopping", "lifestyle"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "فروشگاه", "url": "/shop", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "علاقه‌مندی‌ها", "url": "/account/favorites", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "تنظیمات ظاهری", "url": "/account/settings", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

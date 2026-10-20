@@ -1,0 +1,128 @@
+<div class="topbar">
+  <div class="container topbar-row">
+    <div class="ticker" aria-label="نرخ لحظه‌ای طلا و سکه">
+      <div class="ticker-track">
+        @for (round of [0, 1]; track round) {
+          <ul [attr.aria-hidden]="round === 1 ? 'true' : null">
+            @for (r of rates(); track r.id) {
+              <li>
+                <span class="t-title">{{ r.title }}</span>
+                <strong>{{ r.price | toman }}</strong>
+                <span class="t-change" [class.down]="r.changePercent < 0">
+                  <app-icon [name]="r.changePercent < 0 ? 'trend-down' : 'trend-up'" />
+                  {{ r.changePercent | fa }}٪
+                </span>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    </div>
+    <div class="topbar-info">
+      <a [href]="'tel:' + config.phone" class="ltr"><app-icon name="phone" /> {{ config.phone | fa }}</a>
+      <span><app-icon name="clock" /> {{ config.workingHours }}</span>
+    </div>
+  </div>
+</div>
+
+<header class="header" [class.scrolled]="scrolled()">
+  <div class="container main-row">
+    <button type="button" class="icon-btn menu-btn" (click)="ui.menuOpen.set(true)" aria-label="منو">
+      <app-icon name="menu" />
+    </button>
+
+    <app-logo />
+
+    <button type="button" class="search-trigger" (click)="ui.searchOpen.set(true)">
+      <app-icon name="search" />
+      <span>جستجو در انگشتر، گردنبند، سرویس ...</span>
+      <kbd>/</kbd>
+    </button>
+
+    <div class="actions">
+      <button type="button" class="icon-btn hide-mobile-sm search-mobile" (click)="ui.searchOpen.set(true)" aria-label="جستجو">
+        <app-icon name="search" />
+      </button>
+      <button type="button" class="icon-btn theme-toggle" (click)="theme.toggleMode($event)" aria-label="تغییر حالت روز و شب" title="حالت روز / شب">
+        <app-icon name="moon" class="i-moon" />
+        <app-icon name="sun" class="i-sun" />
+      </button>
+      <a routerLink="/account/favorites" class="icon-btn hide-mobile" aria-label="علاقه‌مندی‌ها">
+        <app-icon name="heart" />
+        @if (favorites.count()) {
+          <span class="count-badge">{{ favorites.count() | fa }}</span>
+        }
+      </a>
+      <a routerLink="/account" class="icon-btn hide-mobile" aria-label="حساب کاربری">
+        <app-icon name="user" />
+      </a>
+      <button type="button" class="cart-btn" (click)="ui.cartOpen.set(true)" aria-label="سبد خرید">
+        <span class="icon-btn">
+          <app-icon name="bag" />
+          @if (cart.count()) {
+            <span class="count-badge">{{ cart.count() | fa }}</span>
+          }
+        </span>
+        <span class="cart-text">
+          <small>سبد خرید</small>
+          <strong>{{ cart.total() ? (cart.total() | toman) + ' ت' : 'خالی' }}</strong>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <nav class="container nav-row" aria-label="منوی اصلی" (mouseleave)="openMenu.set(null)">
+    <ul class="nav">
+      @for (item of config.nav; track item.link) {
+        <li (mouseenter)="openMenu.set(item.children ? item.label : null)">
+          <a
+            [routerLink]="item.link"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: item.link === '/' }"
+            [attr.aria-expanded]="item.children ? openMenu() === item.label : null"
+            (focus)="openMenu.set(item.children ? item.label : null)"
+          >
+            {{ item.label }}
+            @if (item.children) {
+              <app-icon name="chevron-down" class="caret" />
+            }
+          </a>
+        </li>
+      }
+    </ul>
+
+    @if (rates()[0]; as gold) {
+      <a routerLink="/shop" class="gold-pill">
+        <span class="pulse"></span>
+        {{ gold.title }}:
+        <strong>{{ gold.price | toman }}</strong>
+        <small>تومان</small>
+      </a>
+    }
+
+    @for (item of config.nav; track item.link) {
+      @if (item.children && openMenu() === item.label) {
+        <div class="mega">
+          <div class="mega-cols">
+            @for (col of item.children; track col.title) {
+              <div class="mega-col">
+                <h4>{{ col.title }}</h4>
+                @for (l of col.items; track l.label) {
+                  <a [routerLink]="l.link" [queryParams]="l.queryParams">{{ l.label }}</a>
+                }
+              </div>
+            }
+          </div>
+          <div class="mega-cats">
+            @for (c of categories().slice(0, 4); track c.id) {
+              <a [routerLink]="['/shop', c.slug]" class="mega-cat">
+                <img [src]="c.image" [alt]="c.title" width="80" height="80" loading="lazy" />
+                <span>{{ c.title }}</span>
+              </a>
+            }
+          </div>
+        </div>
+      }
+    }
+  </nav>
+</header>
