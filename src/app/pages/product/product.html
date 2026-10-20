@@ -1,0 +1,280 @@
+@if (view(); as v) {
+  @if (v.product; as p) {
+    <div class="container page">
+      <app-breadcrumb
+        [items]="[
+          { label: 'فروشگاه', link: '/shop' },
+          { label: v.categoryTitle ?? 'محصولات', link: '/shop/' + p.categorySlug },
+          { label: p.title },
+        ]"
+      />
+
+      <div class="main">
+        <!-- Gallery -->
+        <section class="gallery" aria-label="تصاویر محصول">
+          <div
+            class="stage"
+            [class.zooming]="zoom()"
+            (mousemove)="onZoom($event)"
+            (mouseleave)="zoom.set(null)"
+            [style.--zx.%]="zoom()?.x"
+            [style.--zy.%]="zoom()?.y"
+          >
+            @for (img of p.images; track img; let i = $index) {
+              <img
+                [src]="img"
+                [alt]="p.title + ' - تصویر ' + (i + 1)"
+                width="600"
+                height="600"
+                [class.active]="i === activeImage()"
+                [attr.fetchpriority]="i === 0 ? 'high' : null"
+              />
+            }
+            <div class="stage-badges">
+              @if (discountPct()) {
+                <span class="badge badge-danger">{{ discountPct() | fa }}٪ تخفیف</span>
+              }
+              @for (b of p.badges; track b) {
+                <span class="badge">{{ badgeLabels[b] }}</span>
+              }
+            </div>
+            <span class="zoom-hint"><app-icon name="zoom" /> برای بزرگنمایی نشانگر را حرکت دهید</span>
+          </div>
+          <div class="thumbs">
+            @for (img of p.images; track img; let i = $index) {
+              <button type="button" [class.active]="i === activeImage()" (click)="activeImage.set(i)" [attr.aria-label]="'تصویر ' + (i + 1 | fa)">
+                <img [src]="img" alt="" width="96" height="96" />
+              </button>
+            }
+          </div>
+        </section>
+
+        <!-- Info -->
+        <section class="info">
+          <div class="top-meta">
+            <a [routerLink]="['/shop', p.categorySlug]" class="brand">{{ v.categoryTitle }} · برند {{ p.brand }}</a>
+            <span class="code">کد: {{ p.specs[0].value | fa }}</span>
+          </div>
+          <h1>{{ p.title }}</h1>
+
+          <div class="rating-row">
+            <span class="stars">
+              @for (s of [1, 2, 3, 4, 5]; track s) {
+                <app-icon name="star" [filled]="s <= p.rating + 0.25" [class.off]="s > p.rating + 0.25" />
+              }
+            </span>
+            <strong>{{ p.rating | fa }}</strong>
+            <button type="button" (click)="tab.set('reviews')">({{ p.reviewCount | fa }} دیدگاه)</button>
+            <span class="sep"></span>
+            <span class="sold"><app-icon name="trend-up" /> {{ p.soldCount | fa }} فروش موفق</span>
+          </div>
+
+          <ul class="quick-specs">
+            <li><app-icon name="scale" /><small>وزن</small><strong>{{ p.weight | fa }} گرم</strong></li>
+            <li><app-icon name="award" /><small>عیار</small><strong>{{ p.karat | fa }}</strong></li>
+            <li><app-icon name="percent" /><small>اجرت</small><strong>{{ p.wagePercent | fa }}٪</strong></li>
+            <li><app-icon name="palette" /><small>رنگ</small><strong>{{ metalLabels[p.metal] }}</strong></li>
+            <li><app-icon name="gem" /><small>سنگ</small><strong>{{ stoneLabels[p.stone] }}</strong></li>
+          </ul>
+
+          <p class="desc">{{ p.description }}</p>
+
+          @if (p.categorySlug === 'ring') {
+            <div class="sizes">
+              <div class="sizes-head">
+                <strong>سایز انگشتر</strong>
+                <a routerLink="/contact">راهنمای سایز</a>
+              </div>
+              <div class="size-list">
+                @for (s of sizes; track s) {
+                  <button type="button" [class.active]="size() === s" (click)="size.set(s)">{{ s | fa }}</button>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Price box -->
+          <div class="buy-box">
+            <div class="price-row">
+              <div>
+                @if (discountPct()) {
+                  <span class="old-price">{{ p.price.totalBeforeDiscount | toman }}</span>
+                }
+                <div class="price big">{{ p.price.total | toman }} <small>تومان</small></div>
+              </div>
+              @if (rates()[0]; as r) {
+                <span class="rate"><span class="dot"></span> {{ r.title }}: {{ r.price | toman }}</span>
+              }
+            </div>
+
+            <button type="button" class="breakdown-toggle" (click)="showBreakdown.set(!showBreakdown())" [attr.aria-expanded]="showBreakdown()">
+              <app-icon name="info" /> جزئیات محاسبه قیمت
+              <app-icon name="chevron-down" class="caret" />
+            </button>
+            @if (showBreakdown()) {
+              <dl class="breakdown">
+                <div><dt>ارزش طلا ({{ p.weight | fa }} گرم)</dt><dd>{{ p.price.goldValue | toman }}</dd></div>
+                <div><dt>اجرت ساخت ({{ p.wagePercent | fa }}٪)</dt><dd>{{ p.price.wage | toman }}</dd></div>
+                @if (p.price.wageDiscount) {
+                  <div class="off"><dt>تخفیف اجرت ({{ p.discountPercent | fa }}٪)</dt><dd>− {{ p.price.wageDiscount | toman }}</dd></div>
+                }
+                <div><dt>سود فروشنده ({{ p.profitPercent | fa }}٪)</dt><dd>{{ p.price.profit | toman }}</dd></div>
+                <div><dt>مالیات بر ارزش افزوده</dt><dd>{{ p.price.tax | toman }}</dd></div>
+                @if (p.price.stonePrice) {
+                  <div><dt>ارزش سنگ ({{ stoneLabels[p.stone] }})</dt><dd>{{ p.price.stonePrice | toman }}</dd></div>
+                }
+                <div class="sum"><dt>مبلغ نهایی</dt><dd>{{ p.price.total | toman }} تومان</dd></div>
+              </dl>
+            }
+
+            <div class="stock" [class.low]="p.stock <= 3">
+              @if (p.stock > 3) {
+                <app-icon name="check" /> موجود در انبار، آماده ارسال
+              } @else if (p.stock > 0) {
+                <app-icon name="zap" /> فقط {{ p.stock | fa }} عدد باقی مانده
+              } @else {
+                <app-icon name="x" /> ناموجود
+              }
+            </div>
+
+            <div class="actions">
+              <div class="qty">
+                <button type="button" (click)="qty.set(qty() + 1)" [disabled]="qty() >= p.stock" aria-label="افزایش"><app-icon name="plus" /></button>
+                <span>{{ qty() | fa }}</span>
+                <button type="button" (click)="qty.set(qty() - 1)" [disabled]="qty() <= 1" aria-label="کاهش"><app-icon name="minus" /></button>
+              </div>
+              <button type="button" class="btn btn-primary btn-lg add" (click)="addToCart(p)" [disabled]="!p.stock">
+                <app-icon name="bag" /> افزودن به سبد خرید
+              </button>
+              <button type="button" class="icon-btn round" [class.fav-on]="isFav()" (click)="favorites.toggle(p.slug, p.title)" aria-label="علاقه‌مندی">
+                <app-icon name="heart" [filled]="isFav()" />
+              </button>
+              <button type="button" class="icon-btn round" (click)="share(p)" aria-label="اشتراک‌گذاری">
+                <app-icon name="share" />
+              </button>
+            </div>
+          </div>
+
+          <ul class="guarantees">
+            <li><app-icon name="shield" /> ضمانت اصالت و فاکتور رسمی</li>
+            <li><app-icon name="truck" /> ارسال رایگان و بیمه‌شده</li>
+            <li><app-icon name="refresh" /> ۷ روز ضمانت بازگشت</li>
+            <li><app-icon name="gift" /> بسته‌بندی هدیه رایگان</li>
+          </ul>
+        </section>
+      </div>
+
+      <!-- Tabs -->
+      <section class="details">
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" [class.active]="tab() === 'desc'" (click)="tab.set('desc')">توضیحات</button>
+          <button type="button" role="tab" [class.active]="tab() === 'specs'" (click)="tab.set('specs')">مشخصات فنی</button>
+          <button type="button" role="tab" [class.active]="tab() === 'reviews'" (click)="tab.set('reviews')">
+            دیدگاه‌ها ({{ p.reviewCount | fa }})
+          </button>
+        </div>
+
+        <div class="tab-body" role="tabpanel">
+          @switch (tab()) {
+            @case ('desc') {
+              <div class="prose">
+                <h2>معرفی {{ p.title }}</h2>
+                <p>{{ p.description }}</p>
+                <p>
+                  این محصول از طلای {{ p.karat | fa }} عیار با رنگ {{ metalLabels[p.metal] }} و وزن {{ p.weight | fa }} گرم
+                  ساخته شده و پیش از ارسال توسط کارشناسان گالری عیارسنجی و پرداخت نهایی می‌شود.
+                </p>
+                <ul class="features">
+                  @for (f of p.features; track f) {
+                    <li><app-icon name="check" /> {{ f }}</li>
+                  }
+                </ul>
+              </div>
+            }
+            @case ('specs') {
+              <dl class="specs">
+                @for (s of p.specs; track s.label) {
+                  <div>
+                    <dt>{{ s.label }}</dt>
+                    <dd>{{ s.value | fa }}</dd>
+                  </div>
+                }
+              </dl>
+            }
+            @case ('reviews') {
+              <div class="reviews">
+                <div class="summary">
+                  <strong class="score">{{ p.rating | fa }}</strong>
+                  <span class="stars">
+                    @for (s of [1, 2, 3, 4, 5]; track s) {
+                      <app-icon name="star" [filled]="s <= p.rating + 0.25" [class.off]="s > p.rating + 0.25" />
+                    }
+                  </span>
+                  <small>از {{ p.reviewCount | fa }} دیدگاه</small>
+                  @for (b of ratingBars(); track b.star) {
+                    <div class="bar">
+                      <span>{{ b.star | fa }}</span>
+                      <span class="track"><span [style.width.%]="b.pct"></span></span>
+                      <span>{{ b.pct | fa }}٪</span>
+                    </div>
+                  }
+                </div>
+                <ul class="list">
+                  @for (r of reviews(); track r.name) {
+                    <li>
+                      <div class="r-head">
+                        <span class="avatar">{{ r.name.charAt(0) }}</span>
+                        <strong>{{ r.name }}</strong>
+                        <span class="badge">خریدار</span>
+                        <small>{{ r.date }}</small>
+                      </div>
+                      <p>{{ r.text }}</p>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+          }
+        </div>
+      </section>
+
+      @if (v.related.length) {
+        <section class="related">
+          <div class="section-head">
+            <div>
+              <span class="eyebrow">پیشنهاد برای شما</span>
+              <h2>محصولات مرتبط</h2>
+              <p>طرح‌هایی که ممکن است دوست داشته باشید</p>
+            </div>
+            <a [routerLink]="['/shop', p.categorySlug]" class="link">مشاهده همه <app-icon name="arrow-left" /></a>
+          </div>
+          <app-rail>
+            @for (r of v.related; track r.id) {
+              <app-product-card [product]="r" />
+            }
+          </app-rail>
+        </section>
+      }
+    </div>
+
+    <!-- نوار خرید چسبان در موبایل -->
+    <div class="mobile-buy">
+      <div>
+        <small>{{ p.weight | fa }} گرم · {{ p.karat | fa }} عیار</small>
+        <strong>{{ p.price.total | toman }} <small>تومان</small></strong>
+      </div>
+      <button type="button" class="btn btn-primary" (click)="addToCart(p)" [disabled]="!p.stock">
+        <app-icon name="bag" /> افزودن به سبد
+      </button>
+    </div>
+  } @else {
+    <div class="container">
+      <div class="empty">
+        <span class="empty-icon"><app-icon name="gem" /></span>
+        <h3>این محصول پیدا نشد</h3>
+        <p>ممکن است محصول حذف شده یا آدرس اشتباه باشد.</p>
+        <a routerLink="/shop" class="btn btn-primary">مشاهده فروشگاه</a>
+      </div>
+    </div>
+  }
+}

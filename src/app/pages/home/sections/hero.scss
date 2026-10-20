@@ -1,0 +1,334 @@
+:host {
+  display: block;
+}
+
+.hero {
+  --tone: #d4a64a;
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  isolation: isolate;
+  min-height: clamp(520px, 72vh, 660px);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(circle at 22% 45%, color-mix(in oklab, var(--tone) 30%, transparent), transparent 55%),
+    radial-gradient(circle at 90% 0%, color-mix(in oklab, var(--tone) 14%, transparent), transparent 45%),
+    linear-gradient(135deg, color-mix(in oklab, var(--tone) 9%, var(--surface)), var(--surface-2));
+  transition: background 900ms var(--ease);
+
+  &[data-tone='rose'] {
+    --tone: #d98b78;
+  }
+  &[data-tone='emerald'] {
+    --tone: #1f9a74;
+  }
+  &[data-tone='night'] {
+    --tone: #5b58a0;
+  }
+  &[data-tone='sapphire'] {
+    --tone: #3a64c9;
+  }
+}
+
+// الگوی ظریف پس‌زمینه
+.glow {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(color-mix(in oklab, var(--text) 9%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse at 30% 50%, #000 0%, transparent 65%);
+}
+
+.slide {
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  align-items: center;
+  gap: 2rem;
+  padding: clamp(28px, 5vw, 64px);
+  padding-bottom: clamp(80px, 8vw, 96px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 700ms var(--ease),
+    visibility 700ms;
+
+  &.active {
+    opacity: 1;
+    visibility: visible;
+    .copy > * {
+      animation: rise 700ms var(--ease) both;
+    }
+    .copy > :nth-child(2) {
+      animation-delay: 80ms;
+    }
+    .copy > :nth-child(3) {
+      animation-delay: 160ms;
+    }
+    .copy > :nth-child(4) {
+      animation-delay: 240ms;
+    }
+    img {
+      animation:
+        art-in 900ms var(--ease) both,
+        float 6s ease-in-out 900ms infinite;
+    }
+  }
+}
+
+.copy {
+  display: grid;
+  gap: 1.1rem;
+  max-width: 560px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  justify-self: start;
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--radius-pill);
+  background: var(--glass);
+  border: 1px solid var(--brand-line);
+  color: var(--brand-text);
+  font-size: 0.85rem;
+  font-weight: 700;
+  app-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+h1,
+.h1 {
+  font-size: clamp(2rem, 5.2vw, 3.9rem);
+  font-weight: 900;
+  line-height: 1.25;
+  color: var(--hero-ink);
+  span {
+    display: block;
+  }
+}
+
+p {
+  font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+  color: var(--text-2);
+  line-height: 2;
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  max-height: 520px;
+  img {
+    width: 92%;
+    height: auto;
+    filter: drop-shadow(0 30px 40px color-mix(in oklab, var(--tone) 35%, transparent));
+  }
+  // عکس‌های واقعی (سرویس کامل) در قاب گرد قرار می‌گیرند
+  img[src$='.jpg'] {
+    width: 72%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--radius-xl);
+    border: 1px solid color-mix(in oklab, var(--tone) 35%, transparent);
+    filter: none;
+    box-shadow: 0 30px 60px -20px color-mix(in oklab, var(--tone) 60%, transparent);
+  }
+}
+
+.ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid color-mix(in oklab, var(--tone) 40%, transparent);
+  &.r1 {
+    inset: 6%;
+    animation: spin 40s linear infinite;
+    border-style: dashed;
+  }
+  &.r2 {
+    inset: 18%;
+    background: radial-gradient(circle, color-mix(in oklab, var(--tone) 22%, transparent), transparent 70%);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes float {
+  50% {
+    transform: translateY(-14px) rotate(-2deg);
+  }
+}
+@keyframes art-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85) rotate(-8deg);
+  }
+}
+
+// ---------- کارت‌های شناور ----------
+.float-card {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.7rem 1rem 0.7rem 0.8rem;
+  border-radius: var(--radius);
+  background: var(--glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  animation: float 7s ease-in-out infinite;
+  span {
+    display: grid;
+    line-height: 1.5;
+  }
+  small {
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  strong {
+    font-size: 0.92rem;
+  }
+  &.rate {
+    top: 9%;
+    left: 4%;
+  }
+  &.ship {
+    bottom: 16%;
+    left: 34%;
+    animation-delay: -3s;
+  }
+}
+.fc-icon {
+  display: grid !important;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background: var(--brand-gradient);
+  color: var(--on-brand);
+  app-icon {
+    width: 19px;
+    height: 19px;
+  }
+}
+
+// ---------- کنترل‌ها ----------
+.controls {
+  position: absolute;
+  bottom: clamp(20px, 3vw, 32px);
+  inset-inline-start: clamp(28px, 5vw, 64px);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.arrow {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  background: var(--glass);
+  color: var(--text);
+  transition: all var(--dur) var(--ease);
+  &:hover {
+    background: var(--text);
+    color: var(--bg);
+  }
+}
+.dots {
+  display: flex;
+  gap: 0.4rem;
+  button {
+    position: relative;
+    width: 26px;
+    height: 6px;
+    border-radius: 99px;
+    background: color-mix(in oklab, var(--text) 18%, transparent);
+    overflow: hidden;
+    transition: width var(--dur) var(--ease);
+    &.active {
+      width: 54px;
+    }
+  }
+  span {
+    position: absolute;
+    inset: 0;
+    background: var(--brand);
+    transform-origin: right;
+    transform: scaleX(0);
+  }
+  .active span {
+    transform: scaleX(1);
+  }
+  .run {
+    animation: progress 6.5s linear;
+  }
+}
+@keyframes progress {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+// ---------- Responsive ----------
+@media (max-width: 900px) {
+  .hero {
+    min-height: auto;
+    border-radius: var(--radius-lg);
+  }
+  .slide {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 24px 20px 84px;
+    text-align: center;
+  }
+  .copy {
+    justify-items: center;
+    max-width: none;
+  }
+  .eyebrow {
+    justify-self: center;
+  }
+  .ctas {
+    justify-content: center;
+  }
+  .art {
+    order: -1;
+    width: min(320px, 78%);
+    margin-inline: auto;
+  }
+  .float-card {
+    display: none;
+  }
+  .controls {
+    inset-inline: 0;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .ctas .btn {
+    flex: 1;
+    --btn-h: 48px;
+    padding-inline: 1rem;
+  }
+}

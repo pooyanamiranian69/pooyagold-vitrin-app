@@ -1,0 +1,127 @@
+<section class="head">
+  <div class="container">
+    <app-breadcrumb [items]="[{ label: 'تماس با ما' }]" />
+    <h1>با ما در تماس باشید</h1>
+    <p>برای مشاوره خرید، سفارش اختصاصی یا پیگیری سفارش، از هر یک از راه‌های زیر با ما ارتباط بگیرید.</p>
+  </div>
+</section>
+
+<div class="container">
+  <div class="cards">
+    <a class="c-card reveal" [href]="'tel:' + config.phone">
+      <span class="ic"><app-icon name="phone" /></span>
+      <small>تلفن تماس</small>
+      <strong class="ltr">{{ config.phone | fa }}</strong>
+    </a>
+    <a class="c-card reveal" [href]="'https://wa.me/98' + config.whatsapp.slice(1)" target="_blank" rel="noopener">
+      <span class="ic"><app-icon name="message" /></span>
+      <small>واتساپ</small>
+      <strong class="ltr">{{ config.whatsapp | fa }}</strong>
+    </a>
+    <a class="c-card reveal" [href]="'mailto:' + config.email">
+      <span class="ic"><app-icon name="mail" /></span>
+      <small>ایمیل</small>
+      <strong>{{ config.email }}</strong>
+    </a>
+    <div class="c-card reveal">
+      <span class="ic"><app-icon name="clock" /></span>
+      <small>ساعات کاری</small>
+      <strong>{{ config.workingHours }}</strong>
+    </div>
+  </div>
+
+  <div class="grid section">
+    <form class="panel form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <h2>ارسال پیام</h2>
+      <p class="muted">فرم زیر را پر کنید؛ کارشناسان ما در کمتر از ۲ ساعت کاری با شما تماس می‌گیرند.</p>
+
+      <div class="row">
+        <div class="field">
+          <label for="c-name">نام و نام خانوادگی</label>
+          <input id="c-name" class="input" formControlName="name" [class.invalid]="invalid('name')" autocomplete="name" />
+          @if (invalid('name')) {
+            <span class="error">لطفا نام خود را کامل وارد کنید.</span>
+          }
+        </div>
+        <div class="field">
+          <label for="c-phone">شماره موبایل</label>
+          <input
+            id="c-phone"
+            class="input ltr"
+            formControlName="phone"
+            [class.invalid]="invalid('phone')"
+            inputmode="tel"
+            autocomplete="tel"
+            placeholder="09xxxxxxxxx"
+          />
+          @if (invalid('phone')) {
+            <span class="error">شماره موبایل معتبر (۱۱ رقم) وارد کنید.</span>
+          }
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="label">موضوع</span>
+        <div class="subjects">
+          @for (s of subjects; track s) {
+            <label class="chip" [class.active]="form.controls.subject.value === s">
+              <input type="radio" formControlName="subject" [value]="s" class="sr-only" />
+              {{ s }}
+            </label>
+          }
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="c-msg">متن پیام</label>
+        <textarea id="c-msg" class="input" formControlName="message" rows="5" [class.invalid]="invalid('message')"></textarea>
+        @if (invalid('message')) {
+          <span class="error">متن پیام حداقل ۱۰ کاراکتر باشد.</span>
+        }
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg" [disabled]="sending()">
+        @if (sending()) {
+          <span class="spinner"></span> در حال ارسال...
+        } @else {
+          <app-icon name="send" /> ارسال پیام
+        }
+      </button>
+    </form>
+
+    <div class="branches">
+      <div class="map" aria-hidden="true">
+        <span class="pin p1"><app-icon name="pin" /></span>
+        <span class="pin p2"><app-icon name="pin" /></span>
+      </div>
+      @for (b of config.branches; track b.title) {
+        <div class="branch reveal">
+          <h3><app-icon name="pin" /> {{ b.title }}</h3>
+          <p>{{ b.address }}</p>
+          <div class="b-meta">
+            <a [href]="'tel:' + b.phone" class="ltr"><app-icon name="phone" /> {{ b.phone | fa }}</a>
+            <span><app-icon name="clock" /> {{ b.hours }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <section id="faq" class="faq">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">پرسش‌های پرتکرار</span>
+        <h2>سوالات متداول</h2>
+        <p>پاسخ رایج‌ترین سوالات درباره خرید آنلاین طلا</p>
+      </div>
+    </div>
+    <div class="accordion">
+      @for (f of faqs(); track f.q; let first = $first) {
+        <details [open]="first">
+          <summary>{{ f.q }}</summary>
+          <div>{{ f.a }}</div>
+        </details>
+      }
+    </div>
+  </section>
+</div>

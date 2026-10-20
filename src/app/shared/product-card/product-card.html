@@ -1,0 +1,84 @@
+@let p = product();
+<article class="card-root">
+  <div class="media">
+    <a [routerLink]="['/product', p.slug]" class="media-link" [attr.aria-label]="p.title">
+      <img
+        class="img main"
+        [src]="p.images[0]"
+        [alt]="p.title"
+        width="600"
+        height="600"
+        [attr.loading]="priority() ? 'eager' : 'lazy'"
+        decoding="async"
+      />
+      @if (p.images[1]) {
+        <img class="img alt" [src]="p.images[1]" alt="" width="600" height="600" loading="lazy" decoding="async" />
+      }
+    </a>
+
+    <div class="badges">
+      @if (discount()) {
+        <span class="badge badge-danger">{{ discount() | fa }}٪ تخفیف</span>
+      }
+      @for (b of p.badges; track b) {
+        <span class="badge" [class.badge-brand]="b === 'exclusive' || b === 'limited'">{{ badgeLabels[b] }}</span>
+      }
+    </div>
+
+    <button
+      type="button"
+      class="fav"
+      [class.on]="isFav()"
+      (click)="favorites.toggle(p.slug, p.title)"
+      [attr.aria-pressed]="isFav()"
+      aria-label="افزودن به علاقه‌مندی‌ها"
+    >
+      <app-icon name="heart" [filled]="isFav()" />
+    </button>
+
+    <button type="button" class="quick-add" (click)="cart.add(p)" [disabled]="!p.stock">
+      <app-icon name="bag" />
+      <span>{{ p.stock ? 'افزودن به سبد' : 'ناموجود' }}</span>
+    </button>
+  </div>
+
+  <div class="body">
+    <div class="meta-top">
+      <span class="metal" [attr.data-metal]="p.metal">طلای {{ metalLabels[p.metal] }}</span>
+      @if (p.stone !== 'none') {
+        <span class="dot"></span>
+        <span>{{ stoneLabels[p.stone] }}</span>
+      }
+      <span class="rating">
+        <app-icon name="star" [filled]="true" />
+        {{ p.rating | fa }}
+      </span>
+    </div>
+
+    <h3 class="title">
+      <a [routerLink]="['/product', p.slug]">{{ p.title }}</a>
+    </h3>
+
+    <ul class="specs">
+      <li><app-icon name="scale" /> {{ p.weight | fa }} گرم</li>
+      <li>{{ p.karat | fa }} عیار</li>
+      <li>اجرت {{ p.wagePercent | fa }}٪</li>
+    </ul>
+
+    @if (layout() === 'list') {
+      <p class="desc">{{ p.description }}</p>
+    }
+
+    <div class="foot">
+      <div class="prices">
+        @if (discount()) {
+          <span class="old-price">{{ p.price.totalBeforeDiscount | toman }}</span>
+        }
+        <span class="price">{{ p.price.total | toman }} <small>تومان</small></span>
+      </div>
+      <button type="button" class="add-mini" (click)="cart.add(p)" [disabled]="!p.stock" aria-label="افزودن به سبد">
+        <app-icon name="plus" />
+      </button>
+    </div>
+  </div>
+</article>

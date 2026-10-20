@@ -1,0 +1,148 @@
+<section class="page-head">
+  <div class="container">
+    <app-breadcrumb [items]="current() ? [{ label: 'فروشگاه', link: '/shop' }, { label: current()!.title }] : [{ label: 'فروشگاه' }]" />
+    <div class="head-row">
+      <div>
+        <h1>
+          @if (state().q) {
+            نتایج جستجو برای «{{ state().q }}»
+          } @else {
+            {{ current()?.title ?? 'فروشگاه طلا و جواهر' }}
+          }
+        </h1>
+        <p>{{ current()?.subtitle ?? 'جدیدترین طرح‌های طلا و جواهر با قیمت لحظه‌ای و ضمانت اصالت' }}</p>
+      </div>
+      @if (result(); as r) {
+        <span class="total"><strong>{{ r.total | fa }}</strong> محصول</span>
+      }
+    </div>
+
+    <nav class="cat-chips" aria-label="دسته‌بندی‌ها">
+      <a routerLink="/shop" class="chip" [class.active]="!category()"><app-icon name="apps" /> همه</a>
+      @for (c of categories(); track c.id) {
+        <a [routerLink]="['/shop', c.slug]" class="chip" [class.active]="category() === c.slug">
+          <app-icon [name]="c.icon" />
+          {{ c.title }}
+        </a>
+      }
+    </nav>
+  </div>
+</section>
+
+<div class="container layout">
+  @if (unknownCategory()) {
+    <div class="empty wide">
+      <span class="empty-icon"><app-icon name="search" /></span>
+      <h3>این دسته‌بندی پیدا نشد</h3>
+      <a routerLink="/shop" class="btn btn-primary">بازگشت به فروشگاه</a>
+    </div>
+  } @else {
+    @if (result(); as r) {
+      <aside class="sidebar" aria-label="فیلترها">
+        <div class="side-head">
+          <h2><app-icon name="filter" /> فیلترها</h2>
+          @if (activeFilters().length) {
+            <button type="button" class="clear" (click)="clearAll()">حذف همه</button>
+          }
+        </div>
+        <app-shop-filters [state]="state()" [facets]="r.facets" (patch)="apply($event)" />
+      </aside>
+
+      <div class="content">
+        <div class="toolbar">
+          <button type="button" class="btn btn-outline btn-sm filter-btn" (click)="filtersOpen.set(true)">
+            <app-icon name="filter" /> فیلترها
+            @if (activeFilters().length) {
+              <span class="mini-badge">{{ activeFilters().length | fa }}</span>
+            }
+          </button>
+
+          <div class="sorts" role="radiogroup" aria-label="مرتب‌سازی">
+            <span class="sorts-label"><app-icon name="list" /> مرتب‌سازی:</span>
+            @for (o of sortOptions; track o.value) {
+              <button type="button" role="radio" [class.active]="state().sort === o.value" [attr.aria-checked]="state().sort === o.value" (click)="setSort(o.value)">
+                {{ o.label }}
+              </button>
+            }
+          </div>
+
+          <select class="input sort-select" (change)="setSort($any($event.target).value)" aria-label="مرتب‌سازی">
+            @for (o of sortOptions; track o.value) {
+              <option [value]="o.value" [selected]="state().sort === o.value">{{ o.label }}</option>
+            }
+          </select>
+
+          <div class="views" role="group" aria-label="نوع نمایش">
+            <button type="button" [class.active]="view() === 'grid'" (click)="setView('grid')" aria-label="نمایش شبکه‌ای">
+              <app-icon name="grid" />
+            </button>
+            <button type="button" [class.active]="view() === 'list'" (click)="setView('list')" aria-label="نمایش لیستی">
+              <app-icon name="list" />
+            </button>
+          </div>
+        </div>
+
+        @if (activeFilters().length) {
+          <div class="active-filters">
+            @for (c of activeFilters(); track c.label) {
+              <button type="button" class="chip" (click)="apply(c.patch)">
+                {{ c.label }} <app-icon name="x" />
+              </button>
+            }
+            <button type="button" class="clear" (click)="clearAll()">پاک کردن همه</button>
+          </div>
+        }
+
+        @if (r.items.length) {
+          <div class="product-grid" [class.as-list]="view() === 'list'">
+            @for (p of r.items; track p.id; let i = $index) {
+              <app-product-card [product]="p" [layout]="view()" [priority]="i < 4" class="item" [style.animation-delay.ms]="(i % 12) * 40" />
+            }
+          </div>
+
+          @if (pages().length > 1) {
+            <nav class="pagination" aria-label="صفحه‌بندی">
+              <button type="button" [disabled]="r.page === 1" (click)="goPage(r.page - 1)" aria-label="صفحه قبل">
+                <app-icon name="chevron-right" />
+              </button>
+              @for (n of pages(); track n) {
+                <button type="button" [class.active]="n === r.page" [attr.aria-current]="n === r.page ? 'page' : null" (click)="goPage(n)">
+                  {{ n | fa }}
+                </button>
+              }
+              <button type="button" [disabled]="r.page === pages().length" (click)="goPage(r.page + 1)" aria-label="صفحه بعد">
+                <app-icon name="chevron-left" />
+              </button>
+            </nav>
+          }
+        } @else {
+          <div class="empty">
+            <span class="empty-icon"><app-icon name="search" /></span>
+            <h3>محصولی با این مشخصات پیدا نشد</h3>
+            <p>فیلترها را تغییر دهید یا همه فیلترها را حذف کنید.</p>
+            <button type="button" class="btn btn-primary" (click)="clearAll()">حذف فیلترها</button>
+          </div>
+        }
+      </div>
+
+      @if (filtersOpen()) {
+        <div class="backdrop" (click)="filtersOpen.set(false)"></div>
+        <div class="sheet" role="dialog" aria-modal="true" aria-label="فیلترها">
+          <div class="drawer-head">
+            <h3>فیلتر محصولات</h3>
+            <button type="button" class="icon-btn" (click)="filtersOpen.set(false)" aria-label="بستن"><app-icon name="x" /></button>
+          </div>
+          <div class="sheet-body">
+            <app-shop-filters [state]="state()" [facets]="r.facets" (patch)="apply($event)" />
+          </div>
+          <div class="sheet-foot">
+            <button type="button" class="btn btn-outline" (click)="clearAll()">حذف همه</button>
+            <button type="button" class="btn btn-primary" (click)="filtersOpen.set(false)">
+              مشاهده {{ r.total | fa }} محصول
+            </button>
+          </div>
+        </div>
+      }
+    }
+  }
+</div>
